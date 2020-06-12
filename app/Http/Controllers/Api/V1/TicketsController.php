@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Repositories\Contracts\TicketNoteRepository;
 use App\Models\Ticket;
 use Eav\Attribute;
 use Eav\AttributeOption;
@@ -15,7 +16,10 @@ use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\TicketCreateRequest;
 use App\Http\Requests\TicketUpdateRequest;
 use App\Http\Repositories\Contracts\TicketRepository;
+use App\Models\TicketNoteType;
 use App\Validators\TicketValidator;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class TicketsController.
@@ -35,15 +39,22 @@ class TicketsController extends Controller
     protected $validator;
 
     /**
+     * @var TicketNoteRepository
+     */
+    protected $ticketNoteRepository;
+
+    /**
      * TicketsController constructor.
      *
      * @param TicketRepository $repository
      * @param TicketValidator $validator
+     * @param TicketNoteRepository $ticketNoteRepository
      */
-    public function __construct(TicketRepository $repository, TicketValidator $validator)
+    public function __construct(TicketRepository $repository, TicketValidator $validator, TicketNoteRepository $ticketNoteRepository)
     {
         $this->repository = $repository;
         $this->validator = $validator;
+        $this->ticketNoteRepository = $ticketNoteRepository;
     }
 
     /**
@@ -53,11 +64,11 @@ class TicketsController extends Controller
      */
     public function all()
     {
-//        $this->createAttribute();
-//        Ticket::create([
-//            'lead_id' => 33,
-//            'status' => 1
-//        ]);
+        //        $this->createAttribute();
+        //        Ticket::create([
+        //            'lead_id' => 33,
+        //            'status' => 1
+        //        ]);
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         $tickets = $this->repository->all(['attr.*']);
 
@@ -74,144 +85,82 @@ class TicketsController extends Controller
         return $this->responseSuccess($attributes);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  TicketCreateRequest $request
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
-     */
-    public function store(TicketCreateRequest $request)
+    public function createOne()
     {
-        try {
+        $ticket = Ticket::create([
+            'lead_id' => 1,
+            'attribute_set_id' => 2
+        ]);
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
+        return $this->responseSuccess($ticket);
+    }
 
-            $ticket = $this->repository->create($request->all());
+    public function create(Request $request)
+    {
+        $defaultAttributeSet = 2;
+        // $attributes = 
+    }
 
-            $response = [
-                'message' => 'Ticket created.',
-                'data' => $ticket->toArray(),
-            ];
+    public function update(Request $request, $id)
+    {
+        $ticket = $this->repository->getById($id);
+        if (!$ticket) {
+            return $this->responseError(404, "Ticket not found");
+        }
+        $entity = \Eav\Entity::findByCode('ticket');
 
-            if ($request->wantsJson()) {
+        $attributeSet = $entity->attributeSet->filter(function ($set) use ($ticket) {
+            return $set->attribute_set_id == $ticket->attribute_set_id;
+        })->first();
 
-                return response()->json($response);
+        if ($attributeSet) {
+            $attributeSet = $attributeSet->load('attributeGroup.attributes.optionValues');
+        }
+        
+        $ticket->fill($request->all());
+        foreach ($attributeSet->attributeGroup as $group) {
+            foreach ($group->attributes as $attribute) {
+                $code = $attribute->attribute_code;
+                if ($request->has($code)) {
+                    if ($attribute->backend_type === "integer") {
+                        $ticket->$code = intval($request->get($code));
+                    } else {
+                        $ticket->$code = $request->get($code);
+                    }
+                }
             }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'error' => true,
-                    'message' => $e->getMessageBag()
+        }
+        $dirty = $ticket->getDirty();
+        $changes = [];
+        if (count($dirty) > 0)
+        {
+            foreach($dirty as $attr => $val) {
+                $changes[$attr]["from"] = $ticket->getOriginal($attr);
+                $changes[$attr]["to"] = $val;
+            }
+            try {
+                DB::beginTransaction();
+                $ticket->save();
+                $noteType = TicketNoteType::getType(isset($changes['current_level_id']) ? TicketNoteType::UPDATE_LEVEL : TicketNoteType::UPDATE_TICKET);
+                $this->ticketNoteRepository->create([
+                    'ticket_id' => $id,
+                    'note_type' => $noteType->id,
+                    'current_level' => $ticket->current_level,
+                    'current_level_id' => $ticket->current_level_id,
+                    'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
+                    'ticket_data' => json_encode([
+                        'ticket' => $ticket,
+                        'changes' => $changes
+                    ])
                 ]);
+                DB::commit();
+            } catch (Exception $ex) {
+                DB::rollback();
+                throw $ex;
+                return $this->responseError(500, "Something wrongs");
             }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $ticket = $this->repository->find($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $ticket,
-            ]);
         }
 
-        return view('tickets.show', compact('ticket'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $ticket = $this->repository->find($id);
-
-        return view('tickets.edit', compact('ticket'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  TicketUpdateRequest $request
-     * @param  string $id
-     *
-     * @return Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
-     */
-    public function update(TicketUpdateRequest $request, $id)
-    {
-        try {
-
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
-
-            $ticket = $this->repository->update($request->all(), $id);
-
-            $response = [
-                'message' => 'Ticket updated.',
-                'data' => $ticket->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-
-            if ($request->wantsJson()) {
-
-                return response()->json([
-                    'error' => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        $deleted = $this->repository->delete($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'message' => 'Ticket deleted.',
-                'deleted' => $deleted,
-            ]);
-        }
-
-        return redirect()->back()->with('message', 'Ticket deleted.');
+        return $this->responseSuccess($ticket);
     }
 }

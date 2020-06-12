@@ -13,6 +13,7 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'integer',
                 'frontend_type' => 'select',
                 'frontend_label' => 'Product',
+                'is_required' => 0,
             ],
             'map' => [
                 'attribute_group' => 'L1'
@@ -23,6 +24,7 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'integer',
                 'frontend_type' => 'select',
                 'frontend_label' => 'Package',
+                'is_required' => 0,
             ],
             'map' => [
                 'attribute_group' => 'L1'
@@ -33,6 +35,7 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'string',
                 'frontend_type' => 'text',
                 'frontend_label' => 'Address',
+                'is_required' => 0,
             ],
             'map' => [
                 'attribute_group' => 'L1'
@@ -40,9 +43,14 @@ class CreateSaleAttributeSet extends Migration
         ],
         'connection_status' => [
             'attribute' => [
-                'backend_type' => 'integer',
+                'backend_type' => 'string',
                 'frontend_type' => 'select',
                 'frontend_label' => 'Connection Status',
+                'options' => [
+                    'connectable' => 'Connectable',
+                    'disconnectable' => 'Disconnectable'
+                ],
+                'is_required' => 1,
             ],
             'map' => [
                 'attribute_group' => 'L2'
@@ -50,9 +58,15 @@ class CreateSaleAttributeSet extends Migration
         ],
         'concern_status' => [
             'attribute' => [
-                'backend_type' => 'integer',
+                'backend_type' => 'string',
                 'frontend_type' => 'select',
                 'frontend_label' => 'Concern Status',
+                'options' => [
+                    'interested_in' => 'Interested in',
+                    'consulted' => 'Consulted',
+                    'declined' => 'Declined',
+                ],
+                'is_required' => 1,
             ],
             'map' => [
                 'attribute_group' => 'L3'
@@ -61,8 +75,14 @@ class CreateSaleAttributeSet extends Migration
         'decline_reason' => [
             'attribute' => [
                 'backend_type' => 'string',
-                'frontend_type' => 'text',
+                'frontend_type' => 'select',
                 'frontend_label' => 'Decline Reason',
+                'options' => [
+                    'price' => 'Price',
+                    'place' => 'Place',
+                    'time' => 'Time',
+                    'capability' => 'Capability'
+                ]
             ],
             'map' => [
                 'attribute_group' => 'L3'
@@ -73,6 +93,10 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'integer',
                 'frontend_type' => 'select',
                 'frontend_label' => 'Studio',
+                'is_required' => 1,
+                'options' => [
+                    '1' => 'test'
+                ],
             ],
             'map' => [
                 'attribute_group' => 'L4'
@@ -83,6 +107,10 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'integer',
                 'frontend_type' => 'select',
                 'frontend_label' => 'Course',
+                'is_required' => 1,
+                'options' => [
+                    '1' => 'test'
+                ],
             ],
             'map' => [
                 'attribute_group' => 'L4'
@@ -93,6 +121,11 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'integer',
                 'frontend_type' => 'select',
                 'frontend_label' => 'Payment Acceptance',
+                'options' => [
+                    'agree' => 'Agree to pay',
+                    'decline' => 'Decline to pay'
+                ],
+                'is_required' => 0,
             ],
             'map' => [
                 'attribute_group' => 'L5'
@@ -103,6 +136,7 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'string',
                 'frontend_type' => 'text',
                 'frontend_label' => 'Full Name',
+                'is_required' => 1,
             ],
             'map' => [
                 'attribute_group' => 'L5'
@@ -113,6 +147,7 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'string',
                 'frontend_type' => 'text',
                 'frontend_label' => 'Phone',
+                'is_required' => 1,
             ],
             'map' => [
                 'attribute_group' => 'L5'
@@ -123,6 +158,7 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'date',
                 'frontend_type' => 'date',
                 'frontend_label' => 'Date of birth',
+                'is_required' => 1,
             ],
             'map' => [
                 'attribute_group' => 'L5'
@@ -130,9 +166,15 @@ class CreateSaleAttributeSet extends Migration
         ],
         'payment_status' => [
             'attribute' => [
-                'backend_type' => 'integer',
-                'frontend_type' => 'date',
+                'backend_type' => 'string',
+                'frontend_type' => 'select',
                 'frontend_label' => 'Payment Status',
+                'options' => [
+                    'proceed' => 'Proceed to payment',
+                    'considering' => 'Considering',
+                    'decline' => 'Decline to pay'
+                ],
+                'is_required' => 1,
             ],
             'map' => [
                 'attribute_group' => 'L6'
@@ -140,9 +182,14 @@ class CreateSaleAttributeSet extends Migration
         ],
         'payment_method' => [
             'attribute' => [
-                'backend_type' => 'integer',
-                'frontend_type' => 'text',
+                'backend_type' => 'string',
+                'frontend_type' => 'select',
                 'frontend_label' => 'Payment Method',
+                'options' => [
+                    'cod' => 'COD',
+                    'wire_transfer' => 'Wire Transfer'
+                ],
+                'is_required' => 1,
             ],
             'map' => [
                 'attribute_group' => 'L6'
@@ -153,6 +200,7 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'integer',
                 'frontend_type' => 'text',
                 'frontend_label' => 'Package Value',
+                'is_required' => 1,
             ],
             'map' => [
                 'attribute_group' => 'L6'
@@ -163,9 +211,21 @@ class CreateSaleAttributeSet extends Migration
                 'backend_type' => 'integer',
                 'frontend_type' => 'text',
                 'frontend_label' => 'Payment Amount',
+                'is_required' => 1,
             ],
             'map' => [
                 'attribute_group' => 'L7'
+            ]
+        ],
+        'current_level' => [
+            'attribute' => [
+                'backend_type' => 'string',
+                'frontend_type' => 'hidden',
+                'frontend_label' => 'Current Level',
+                'is_required' => 0,
+            ],
+            'map' => [
+                
             ]
         ],
     ];
@@ -195,6 +255,12 @@ class CreateSaleAttributeSet extends Migration
                     'attribute_set_id' => $attributeSet->attribute_set_id,
                 ]);
             }
+
+            $levelGroups[] = Eav\AttributeGroup::create([
+                'attribute_group_name' => 'General',
+                'attribute_set_id' => $attributeSet->attribute_set_id,
+                'sequence' => 99999
+            ]);
 
             $saleAttributes = $this->saleAttributes;
 

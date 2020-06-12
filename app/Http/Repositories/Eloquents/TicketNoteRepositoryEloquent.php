@@ -2,18 +2,18 @@
 
 namespace App\Http\Repositories\Eloquents;
 
+use App\Http\Repositories\Contracts\TicketNoteRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Http\Repositories\Contracts\TicketRepository;
-use App\Models\Ticket;
+use App\Models\TicketNote;
 use App\Validators\TicketValidator;
 
 /**
- * Class TicketRepositoryEloquent.
+ * Class TicketNoteRepositoryEloquent.
  *
  * @package namespace App\Http\Repositories\Eloquents;
  */
-class TicketRepositoryEloquent extends BaseRepository implements TicketRepository
+class TicketNoteRepositoryEloquent extends BaseRepository implements TicketNoteRepository
 {
     /**
      * Specify Model class name
@@ -22,7 +22,7 @@ class TicketRepositoryEloquent extends BaseRepository implements TicketRepositor
      */
     public function model()
     {
-        return Ticket::class;
+        return TicketNote::class;
     }
 
     /**
@@ -48,32 +48,28 @@ class TicketRepositoryEloquent extends BaseRepository implements TicketRepositor
     public function getDataBy($options = [])
     {
         $model = $this->model();
-        $tickets = $model::where('attribute_set_id', 2);
+        $notes = $model::select(["*"])->with("noteType");
 
-        if (isset($options['leadId']) && $options['leadId']) {
-            $tickets = $tickets->whereAttribute('lead_id', $options['leadId']);
+        if (isset($options["ticketId"]) && $options["ticketId"]) {
+            $notes = $notes->where("ticket_id", $options["ticketId"]);
         }
 
-        if (isset($options['withAttributes']) && $options['withAttributes']) {
-            $tickets = $tickets->whereAttribute('lead_id', $options['leadId']);
-        }
-
-        return $tickets->get(["*", "attr.*"]);
+        return $notes->orderBy('created_at', 'desc')->get();
     }
 
     public function getById($id)
     {
         $model = $this->model();
-        $ticket = $model::select(["*", "attr.*"])->find($id);
+        $note = $model::select(["*"])->find($id);
 
-        return $ticket;
+        return $note;
     }
 
-    public function createTemp($data)
+    public function create($data)
     {
         $model = new $this->model();
         $model->fill($data);
-
+        $model->save();
         return $model;
     }
 }
