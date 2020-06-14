@@ -4251,8 +4251,6 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
-<<<<<<< HEAD
-=======
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -4267,7 +4265,6 @@
                     "type": "tidelift"
                 }
             ],
->>>>>>> 06f22b57da69273abb6868b99e67cd663b733410
             "time": "2020-06-12T11:25:56+00:00"
         },
         {
@@ -4331,8 +4328,6 @@
                 "mime",
                 "mime-type"
             ],
-<<<<<<< HEAD
-=======
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -4347,7 +4342,6 @@
                     "type": "tidelift"
                 }
             ],
->>>>>>> 06f22b57da69273abb6868b99e67cd663b733410
             "time": "2020-06-09T15:07:35+00:00"
         },
         {
