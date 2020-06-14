@@ -14,4 +14,5 @@ interface TicketRepository extends RepositoryInterface
     public function getDataBy($options = []);
     public function getById($id);
     public function createTemp($data);
+    public function create($data);
 }

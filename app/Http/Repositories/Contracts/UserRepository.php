@@ -5,11 +5,11 @@ namespace App\Http\Repositories\Contracts;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
- * Interface LeadRepository.
+ * Interface UserRepository.
  *
  * @package namespace App\Http\Repositories\Contracts;
  */
-interface LeadRepository extends RepositoryInterface
+interface UserRepository extends RepositoryInterface
 {
     public function getDataBy($option = []);
     public function getById($id);

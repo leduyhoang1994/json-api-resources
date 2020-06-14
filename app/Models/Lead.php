@@ -21,5 +21,10 @@ class Lead extends Model implements Transformable
      * @var array
      */
     protected $fillable = [];
+    protected $guarded = [];
 
+    public function ticket()
+    {
+        return $this->hasOne(Ticket::class, 'id', 'current_ticket_id')->select(["*", "attr.*"]);
+    }
 }

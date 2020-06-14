@@ -116,7 +116,7 @@ class TicketsController extends Controller
         if ($attributeSet) {
             $attributeSet = $attributeSet->load('attributeGroup.attributes.optionValues');
         }
-        
+
         $ticket->fill($request->all());
         foreach ($attributeSet->attributeGroup as $group) {
             foreach ($group->attributes as $attribute) {
@@ -132,27 +132,64 @@ class TicketsController extends Controller
         }
         $dirty = $ticket->getDirty();
         $changes = [];
-        if (count($dirty) > 0)
-        {
-            foreach($dirty as $attr => $val) {
+        if (count($dirty) > 0) {
+            foreach ($dirty as $attr => $val) {
                 $changes[$attr]["from"] = $ticket->getOriginal($attr);
                 $changes[$attr]["to"] = $val;
             }
             try {
                 DB::beginTransaction();
-                $ticket->save();
                 $noteType = TicketNoteType::getType(isset($changes['current_level_id']) ? TicketNoteType::UPDATE_LEVEL : TicketNoteType::UPDATE_TICKET);
-                $this->ticketNoteRepository->create([
-                    'ticket_id' => $id,
-                    'note_type' => $noteType->id,
-                    'current_level' => $ticket->current_level,
-                    'current_level_id' => $ticket->current_level_id,
-                    'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
-                    'ticket_data' => json_encode([
-                        'ticket' => $ticket,
-                        'changes' => $changes
-                    ])
-                ]);
+                if ($noteType == TicketNoteType::getType(TicketNoteType::UPDATE_LEVEL)) {
+                    $attributeSet = $entity->attributeSet->where("attribute_set_id", $ticket->attribute_set_id)->first();
+                    $oldLevel = $attributeSet->attributeGroup->where('attribute_group_id', $ticket->getOriginal("current_level_id"))->first();
+                    $newLevel = $attributeSet->attributeGroup->where('attribute_group_id', $ticket->current_level_id)->first();
+
+                    $oldLevel = $oldLevel ? $oldLevel : (new \Eav\AttributeGroup([
+                        'sequence' => 0
+                    ]));
+
+                    $attrGroups = $attributeSet->attributeGroup->filter(function ($item) use ($oldLevel, $newLevel) {
+                        $formula = ($oldLevel->sequence > $newLevel->sequence) ?
+                            $item->sequence >= $newLevel->sequence && $item->sequence < $oldLevel->sequence
+                            : 
+                            $item->sequence <= $newLevel->sequence && $item->sequence > $oldLevel->sequence;
+                        return $formula;
+                    })->values()->toArray();
+                    
+                    usort($attrGroups, function($a, $b) use ($oldLevel, $newLevel) {
+                        return ($oldLevel->sequence < $newLevel->sequence) ? ($a['sequence'] > $b['sequence']) : ($a['sequence'] < $b['sequence']);
+                    });
+
+                    // return $this->responseSuccess($attrGroups);
+                    
+                    foreach ($attrGroups as $group) {
+                        $this->ticketNoteRepository->create([
+                            'ticket_id' => $id,
+                            'note_type' => $noteType->id,
+                            'current_level' => $group['attribute_group_name'],
+                            'current_level_id' => $group['attribute_group_id'],
+                            'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
+                            'ticket_data' => json_encode([
+                                'ticket' => $ticket,
+                                'changes' => $changes
+                            ])
+                        ]);
+                    }
+                } else {
+                    $this->ticketNoteRepository->create([
+                        'ticket_id' => $id,
+                        'note_type' => $noteType->id,
+                        'current_level' => $ticket->current_level,
+                        'current_level_id' => $ticket->current_level_id,
+                        'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
+                        'ticket_data' => json_encode([
+                            'ticket' => $ticket,
+                            'changes' => $changes
+                        ])
+                    ]);
+                }
+                $ticket->save();
                 DB::commit();
             } catch (Exception $ex) {
                 DB::rollback();

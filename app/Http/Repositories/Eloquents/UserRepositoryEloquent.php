@@ -5,16 +5,15 @@ namespace App\Http\Repositories\Eloquents;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Http\Repositories\Contracts\LeadRepository;
-use App\Models\Lead;
+use App\Models\User;
 use App\Validators\LeadValidator;
-use Illuminate\Support\Facades\Auth;
 
 /**
- * Class LeadRepositoryEloquent.
+ * Class UserRepositoryEloquent.
  *
  * @package namespace App\Http\Repositories\Eloquents;
  */
-class LeadRepositoryEloquent extends BaseRepository implements LeadRepository
+class UserRepositoryEloquent extends BaseRepository implements LeadRepository
 {
     /**
      * Specify Model class name
@@ -23,7 +22,7 @@ class LeadRepositoryEloquent extends BaseRepository implements LeadRepository
      */
     public function model()
     {
-        return Lead::class;
+        return User::class;
     }
 
 
@@ -44,12 +43,7 @@ class LeadRepositoryEloquent extends BaseRepository implements LeadRepository
             $model = $model->with("ticket");
         }
 
-        if (isset($options['assigned-to-me']) && $options['assigned-to-me']) {
-            $user = Auth::user();
-            $model = $model->where("current_agent_id", $user->id);
-        }
-
-        $leads = $model->get();
+        $leads = $model->limit(10)->get();
         return $leads;
     }
 

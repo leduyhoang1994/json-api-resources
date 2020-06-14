@@ -42,8 +42,8 @@ class TicketNoteController extends Controller
         $note = $this->repository->create([
             'ticket_id' => $ticket["id"],
             'note_type' => $noteType->id,
-            'current_level' => $ticket["current_level"],
-            'current_level_id' => $ticket["current_level_id"],
+            'current_level' => isset($ticket["current_level"]) ? $ticket["current_level"] : null,
+            'current_level_id' => isset($ticket["current_level_id"]) ? $ticket["current_level_id"] : null,
             'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
             'ticket_data' => json_encode([
                 'ticket' => $ticket,

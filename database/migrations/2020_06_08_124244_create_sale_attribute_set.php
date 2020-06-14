@@ -8,23 +8,36 @@ class CreateSaleAttributeSet extends Migration
 {
 
     protected $saleAttributes = [
-        'product_id' => [
+        'connection_status' => [
             'attribute' => [
-                'backend_type' => 'integer',
+                'backend_type' => 'string',
                 'frontend_type' => 'select',
-                'frontend_label' => 'Product',
-                'is_required' => 0,
+                'frontend_label' => 'Connection Status',
+                'options' => [
+                    'connected' => 'Connected',
+                    'busy' => 'Busy, call later',
+                    'cant_connect' => 'Cant connect',
+                    'cant_connect_3' => 'Cant Connect 3 times',
+                    'wrong_target' => 'Wrong target'
+                ],
+                'is_required' => 1,
             ],
             'map' => [
                 'attribute_group' => 'L1'
             ]
         ],
-        'package_id' => [
+        'target_product_id' => [
             'attribute' => [
-                'backend_type' => 'integer',
+                'backend_type' => 'string',
                 'frontend_type' => 'select',
-                'frontend_label' => 'Package',
+                'frontend_label' => 'Target Product',
                 'is_required' => 0,
+                'options' => [
+                    'fit' => 'Fit',
+                    'star' => 'Star',
+                    'la' => 'La',
+                    'la_online' => 'La Online'
+                ],
             ],
             'map' => [
                 'attribute_group' => 'L1'
@@ -41,21 +54,6 @@ class CreateSaleAttributeSet extends Migration
                 'attribute_group' => 'L1'
             ]
         ],
-        'connection_status' => [
-            'attribute' => [
-                'backend_type' => 'string',
-                'frontend_type' => 'select',
-                'frontend_label' => 'Connection Status',
-                'options' => [
-                    'connectable' => 'Connectable',
-                    'disconnectable' => 'Disconnectable'
-                ],
-                'is_required' => 1,
-            ],
-            'map' => [
-                'attribute_group' => 'L2'
-            ]
-        ],
         'concern_status' => [
             'attribute' => [
                 'backend_type' => 'string',
@@ -67,6 +65,20 @@ class CreateSaleAttributeSet extends Migration
                     'declined' => 'Declined',
                 ],
                 'is_required' => 1,
+            ],
+            'map' => [
+                'attribute_group' => 'L2'
+            ]
+        ],
+        'convert_result' => [
+            'attribute' => [
+                'backend_type' => 'string',
+                'frontend_type' => 'select',
+                'frontend_label' => 'Convert result',
+                'options' => [
+                    'converted' => 'Converted',
+                    'declined' => 'Declined',
+                ]
             ],
             'map' => [
                 'attribute_group' => 'L3'
@@ -81,7 +93,8 @@ class CreateSaleAttributeSet extends Migration
                     'price' => 'Price',
                     'place' => 'Place',
                     'time' => 'Time',
-                    'capability' => 'Capability'
+                    'capability' => 'Capability',
+                    'level' => 'Level',
                 ]
             ],
             'map' => [
@@ -90,12 +103,12 @@ class CreateSaleAttributeSet extends Migration
         ],
         'studio_id' => [
             'attribute' => [
-                'backend_type' => 'integer',
+                'backend_type' => 'string',
                 'frontend_type' => 'select',
                 'frontend_label' => 'Studio',
                 'is_required' => 1,
                 'options' => [
-                    '1' => 'test'
+                    
                 ],
             ],
             'map' => [
@@ -104,12 +117,12 @@ class CreateSaleAttributeSet extends Migration
         ],
         'course_id' => [
             'attribute' => [
-                'backend_type' => 'integer',
+                'backend_type' => 'string',
                 'frontend_type' => 'select',
                 'frontend_label' => 'Course',
                 'is_required' => 1,
                 'options' => [
-                    '1' => 'test'
+                    
                 ],
             ],
             'map' => [
@@ -164,6 +177,17 @@ class CreateSaleAttributeSet extends Migration
                 'attribute_group' => 'L5'
             ]
         ],
+        'address_cod' => [
+            'attribute' => [
+                'backend_type' => 'string',
+                'frontend_type' => 'text',
+                'frontend_label' => 'Address COD',
+                'is_required' => 0,
+            ],
+            'map' => [
+                'attribute_group' => 'L5'
+            ]
+        ],
         'payment_status' => [
             'attribute' => [
                 'backend_type' => 'string',
@@ -190,6 +214,26 @@ class CreateSaleAttributeSet extends Migration
                     'wire_transfer' => 'Wire Transfer'
                 ],
                 'is_required' => 1,
+            ],
+            'map' => [
+                'attribute_group' => 'L6'
+            ]
+        ],
+        'package_id' => [
+            'attribute' => [
+                'backend_type' => 'string',
+                'frontend_type' => 'select',
+                'frontend_label' => 'Package',
+                'is_required' => 1,
+                'options' => [
+                    'fit_30' => 'Fit 30',
+                    'fit_50' => 'Fit 50',
+                    'fit_70' => 'Fit 70',
+                    'la_training' => 'La Training',
+                    'la_online' => 'La Online',
+                    'star_24' => 'Star 24',
+                    'star_48' => 'Star 48',
+                ],
             ],
             'map' => [
                 'attribute_group' => 'L6'
@@ -253,6 +297,7 @@ class CreateSaleAttributeSet extends Migration
                 $levelGroups[] = Eav\AttributeGroup::create([
                     'attribute_group_name' => 'L' . $i,
                     'attribute_set_id' => $attributeSet->attribute_set_id,
+                    'sequence' => $i
                 ]);
             }
 

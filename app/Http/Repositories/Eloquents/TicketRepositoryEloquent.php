@@ -76,4 +76,12 @@ class TicketRepositoryEloquent extends BaseRepository implements TicketRepositor
 
         return $model;
     }
+
+    public function create($data)
+    {
+        $model = new $this->model();
+        $model->fill($data);
+        $model->save();
+        return $model;
+    }
 }

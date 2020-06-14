@@ -14,13 +14,13 @@ class CreateTicketNoteTable extends Migration
     public function up()
     {
         Schema::create('ticket_note', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->integer("ticket_id");
             $table->integer("current_level_id")->nullable();
             $table->string("current_level")->nullable();
             $table->integer("note_type");
             $table->longText("note")->nullable();
-            $table->json("ticket_data")->nullable();
+            $table->string("mongo_ticket_data_id")->nullable();
             $table->timestamps();
         });
         Schema::create('ticket_note_type', function (Blueprint $table) {

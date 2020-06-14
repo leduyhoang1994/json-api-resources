@@ -24,6 +24,6 @@ class Controller extends BaseController
             "success"       => false,
             "error_code"    => $errorCode,
             "message"       => $msg
-        ]);
+        ], $errorCode);
     }
 }
