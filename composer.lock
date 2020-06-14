@@ -3672,8 +3672,6 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-<<<<<<< HEAD
-=======
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -3688,7 +3686,6 @@
                     "type": "tidelift"
                 }
             ],
->>>>>>> 06f22b57da69273abb6868b99e67cd663b733410
             "time": "2020-06-07T19:47:44+00:00"
         },
         {
