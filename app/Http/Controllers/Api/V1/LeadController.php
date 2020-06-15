@@ -27,11 +27,25 @@ class LeadController extends Controller
     $this->ticketRepository = $ticketRepository;
   }
 
-  public function getAll()
+  public function getMine()
   {
     $leads = $this->repository->getDataBy([
       "with-ticket" => true,
       "assigned-to-me" => true
+    ]);
+
+    return $this->responseSuccess($leads);
+  }
+
+  public function getAll(Request $request)
+  {
+    $leads = $this->repository->getDataBy([
+      "with-ticket" => true,
+      "with-agent" => true,
+      "page-size" => $request->has("per_page") ? $request->get("per_page") : null,
+      "current-page" => $request->has("page") ? $request->get("page") : 1,
+      "show-not-assigned" => $request->has("showNotAssigned") ? $request->get("showNotAssigned") : null,
+      "search" => $request->has("search") ? $request->get("search") : null,
     ]);
 
     return $this->responseSuccess($leads);
@@ -53,7 +67,7 @@ class LeadController extends Controller
     if ($tickets) {
       $entity = \Eav\Entity::findByCode('ticket');
 
-      $sets = $entity->attributeSet->load('attributeGroup.attributes.optionValues');
+      $sets = $entity->attributeSet->load(['attributeGroup.attributes.optionValues', 'attributeGroup.processRules']);
     }
     return $this->responseSuccess([
       "tickets" => $tickets,
@@ -74,7 +88,7 @@ class LeadController extends Controller
     }
 
     $entity = \Eav\Entity::findByCode('ticket');
-    $sets = $entity->attributeSet->load('attributeGroup.attributes.optionValues');
+    $sets = $entity->attributeSet->load(['attributeGroup.attributes.optionValues', 'attributeGroup.processRules']);
 
     return $this->responseSuccess([
       "ticket" => $ticket,
@@ -91,8 +105,8 @@ class LeadController extends Controller
     ]);
 
     $entity = \Eav\Entity::findByCode('ticket');
-    $sets = $entity->attributeSet->load('attributeGroup.attributes.optionValues');
-    
+    $sets = $entity->attributeSet->load(['attributeGroup.attributes.optionValues', 'attributeGroup.processRules']);
+
     $this->repository->update($id, [
       'current_ticket_id' => $ticket->id
     ]);
@@ -195,5 +209,18 @@ class LeadController extends Controller
     return empty(array_filter($input, function ($a) {
       return $a !== null;
     }));
+  }
+
+  public function assign(Request $request)
+  {
+    if (!$request->has("leads") || !$request->has("agent")) {
+      return $this->responseError(400, "Bad parameters");
+    }
+
+    $result = $this->repository->update($request->get("leads"), [
+      'current_agent_id' => $request->get("agent")
+    ]);
+
+    return $this->responseSuccess($result);
   }
 }

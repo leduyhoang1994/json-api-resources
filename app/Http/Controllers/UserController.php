@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserRole;
 use Validator;
 use Exception;
 use GuzzleHttp\Client;
@@ -13,6 +14,11 @@ use Laravel\Passport\Client as OClient;
 class UserController extends Controller
 {
     public $successStatus = 200;
+
+    public function getAllAgent() {
+        $agents = User::where("role_id", UserRole::AGENT)->get();
+        return $this->responseSuccess($agents);
+    }
 
     public function login()
     {

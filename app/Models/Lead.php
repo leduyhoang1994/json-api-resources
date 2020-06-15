@@ -27,4 +27,9 @@ class Lead extends Model implements Transformable
     {
         return $this->hasOne(Ticket::class, 'id', 'current_ticket_id')->select(["*", "attr.*"]);
     }
+
+    public function agent()
+    {
+        return $this->hasOne(User::class, 'id', 'current_agent_id')->select(["id", "email"]);
+    }
 }

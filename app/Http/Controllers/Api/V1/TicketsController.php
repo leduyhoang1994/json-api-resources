@@ -114,7 +114,7 @@ class TicketsController extends Controller
         })->first();
 
         if ($attributeSet) {
-            $attributeSet = $attributeSet->load('attributeGroup.attributes.optionValues');
+            $attributeSet = $attributeSet->load(['attributeGroup.attributes.optionValues', 'attributeGroup.processRules']);
         }
 
         $ticket->fill($request->all());

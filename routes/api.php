@@ -39,10 +39,15 @@ Route::prefix('v1')->group(function () {
     
         /** Lead */
         Route::get('/leads', '\App\Http\Controllers\Api\V1\LeadController@getAll');
+        Route::post('/leads/assign', '\App\Http\Controllers\Api\V1\LeadController@assign');
+        Route::get('/my-leads', '\App\Http\Controllers\Api\V1\LeadController@getMine');
         Route::post('/leads/import', '\App\Http\Controllers\Api\V1\LeadController@importLeads');
         Route::post('/lead/{id}/create-ticket', '\App\Http\Controllers\Api\V1\LeadController@createTicket');
         Route::get('/lead/{id}/tickets', '\App\Http\Controllers\Api\V1\LeadController@getTickets');
         Route::get('/lead/{id}/current-ticket', '\App\Http\Controllers\Api\V1\LeadController@getCurrentTicket');
         Route::get('/lead/{id}', '\App\Http\Controllers\Api\V1\LeadController@getOne');
+
+        /** Agent */
+        Route::get('/agents', '\App\Http\Controllers\UserController@getAllAgent');
     });
 });
