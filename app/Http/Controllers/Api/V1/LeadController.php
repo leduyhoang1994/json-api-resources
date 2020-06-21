@@ -215,7 +215,7 @@ class LeadController extends Controller
 				}
 			}
 			DB::commit();
-			return $this->responseSuccess("Done");
+			return $this->responseSuccess($batch);
 		} catch (Exception $ex) {
 			DB::rollback();
 			return $this->responseError(500, $ex->getMessage());
