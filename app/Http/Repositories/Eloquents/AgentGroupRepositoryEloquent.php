@@ -75,4 +75,14 @@ class AgentGroupRepositoryEloquent extends BaseRepository implements AgentGroupR
 		return $group;
 	}
 
+	public function create(array $attributes)
+	{
+		$group = parent::create($attributes);
+		if (isset($attributes['agents'])) {
+			$userIds = array_column($attributes['agents'], 'id');
+			$group->agents()->sync($userIds);
+		}
+		return $group;
+	}
+
 }

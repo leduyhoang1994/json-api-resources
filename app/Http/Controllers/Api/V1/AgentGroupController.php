@@ -42,6 +42,7 @@ class AgentGroupController extends Controller
 	{
 		try {
 			$agentGroup = $this->repository->create($request->all());
+			$agentGroup->load('agents');
 			return $this->responseSuccess($agentGroup);
 		} catch (ValidatorException $exception) {
 			return $this->responseError(400, $exception->getMessageBag()->first());
