@@ -2,6 +2,8 @@
 
 namespace App\Http\Repositories\Eloquents;
 
+use App\Http\Repositories\Contracts\UserRepository;
+use App\Validators\UserValidator;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Http\Repositories\Contracts\LeadRepository;
@@ -13,7 +15,7 @@ use App\Validators\LeadValidator;
  *
  * @package namespace App\Http\Repositories\Eloquents;
  */
-class UserRepositoryEloquent extends BaseRepository implements LeadRepository
+class UserRepositoryEloquent extends BaseRepository implements UserRepository
 {
     /**
      * Specify Model class name
@@ -25,9 +27,12 @@ class UserRepositoryEloquent extends BaseRepository implements LeadRepository
         return User::class;
     }
 
+	public function validator()
+	{
+		return UserValidator::class;
+	}
 
-
-    /**
+	/**
      * Boot up the repository, pushing criteria
      */
     public function boot()
@@ -39,11 +44,15 @@ class UserRepositoryEloquent extends BaseRepository implements LeadRepository
     {
         $model = (new $this->model());
 
-        if (isset($options['with-ticket']) && $options['with-ticket']) {
-            $model = $model->with("ticket");
+        if (isset($options['with-agent-groups']) && $options['with-agent-groups']) {
+            $model = $model->with("agentGroups");
         }
 
-        $leads = $model->limit(10)->get();
+	    if (isset($options['id']) && $options['id']) {
+		    $model = $model->where('id', $options['id']);
+		    return $model->first();
+	    }
+        $leads = $model->get();
         return $leads;
     }
 
@@ -57,6 +66,14 @@ class UserRepositoryEloquent extends BaseRepository implements LeadRepository
 
     public function update($id, $data) {
         $model = $this->model();
-        return $model::where("id", $id)->update($data);
+        $user = $model::find($id);
+        $user->fill($data);
+        if (isset($data['agent_groups'])) {
+        	$groupIds = array_column($data['agent_groups'], 'id');
+        	$user->agentGroups()->sync($groupIds);
+        }
+        $user->save();
+        $user->load("agentGroups");
+        return $user;
     }
 }

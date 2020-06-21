@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TicketNoteTypeSeeder::class);
         $this->call(UserRoleSeeder::class);
         $this->call(SaleTicketProcessRuleSeeder::class);
+        $this->call(InstallPassportSeeder::class);
     }
 }

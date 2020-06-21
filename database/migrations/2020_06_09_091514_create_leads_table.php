@@ -16,21 +16,24 @@ class CreateLeadsTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('leads', function(Blueprint $table) {
-            $table->increments('id');
-						$table->string('name')->nullable();
-						$table->string('phone')->nullable();
-						$table->string('email')->nullable();
-						$table->string('source')->nullable();
-						$table->text('note')->nullable();
-						$table->string('train_location')->nullable();
-						$table->string('page')->nullable();
-						$table->string('district')->nullable();
-						$table->string('product')->nullable();
-						$table->date('lead_date')->nullable();
-						$table->integer('current_ticket_id')->nullable();
-						$table->integer('current_agent_id')->nullable();
-            $table->timestamps();
+		Schema::create('leads', function (Blueprint $table) {
+			$table->increments('id');
+			$table->string('name')->nullable();
+			$table->string('phone')->nullable();
+			$table->string('email')->nullable();
+			$table->string('source')->nullable();
+			$table->text('note')->nullable();
+			$table->string('train_location')->nullable();
+			$table->string('page')->nullable();
+			$table->string('district')->nullable();
+			$table->string('product')->nullable();
+			$table->date('lead_date')->nullable();
+			$table->integer('current_ticket_id')->nullable();
+			$table->integer('current_agent_id')->nullable();
+			$table->integer('import_status')->default(\App\Models\Lead::IMPORT_STATUS_PENDING);
+			$table->integer('import_user_id')->nullable();
+			$table->string('batch')->nullable()->index();
+			$table->timestamps();
 		});
 	}
 

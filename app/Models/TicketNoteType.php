@@ -11,6 +11,8 @@ class TicketNoteType extends Model
     const UPDATE_TICKET = "update_ticket";
     const UPDATE_LEVEL = "update_level";
     const AGENT_NOTE = "agent_note";
+    const OPEN_TICKET = "open_ticket";
+    const CLOSE_TICKET = "close_ticket";
 
     public static function getType($code) {
         return self::where("code", $code)->first();

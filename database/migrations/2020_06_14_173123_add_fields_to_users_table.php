@@ -15,7 +15,6 @@ class AddFieldsToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->integer("role_id")->default(3);
-            $table->integer("quota")->default(20);
         });
     }
 
@@ -28,7 +27,6 @@ class AddFieldsToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn("role_id");
-            $table->dropColumn("quota");
         });
     }
 }

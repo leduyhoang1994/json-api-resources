@@ -26,5 +26,15 @@ class TicketNoteTypeSeeder extends Seeder
             'code' => 'agent_note',
             'label' => 'Agent Note'
         ]);
+
+	    DB::table('ticket_note_type')->updateOrInsert([
+		    'code' => 'open_ticket',
+		    'label' => 'Open Ticket'
+	    ]);
+
+	    DB::table('ticket_note_type')->updateOrInsert([
+		    'code' => 'close_ticket',
+		    'label' => 'Close Ticket'
+	    ]);
     }
 }

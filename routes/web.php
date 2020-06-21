@@ -17,6 +17,7 @@ function makeFormula($data, $item)
 {
     return $data.'["' . $item['field'] . '"] ' . $item['equation'] . ' ' . $item['value'];
 }
+Route::get('/leads/export', '\App\Http\Controllers\Api\V1\LeadController@export');
 
 function getLogic($formula, $rules, $data, $boundary = false)
 {

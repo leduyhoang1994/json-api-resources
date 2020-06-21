@@ -15,6 +15,9 @@ class Lead extends Model implements Transformable
 {
     use TransformableTrait;
 
+    const IMPORT_STATUS_PENDING = 0;
+    const IMPORT_STATUS_DONE = 1;
+
     /**
      * The attributes that are mass assignable.
      *

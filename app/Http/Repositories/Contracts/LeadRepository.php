@@ -14,4 +14,7 @@ interface LeadRepository extends RepositoryInterface
     public function getDataBy($option = []);
     public function getById($id);
     public function update($id, $data);
+	public function deleteBy($options = []);
+	public function updateBy($options, $data);
+	public function massAssign($agents);
 }

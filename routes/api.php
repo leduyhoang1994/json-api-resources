@@ -38,16 +38,38 @@ Route::prefix('v1')->group(function () {
         Route::post('/ticket', '\App\Http\Controllers\Api\V1\TicketsController@create');
     
         /** Lead */
+	    Route::get('/leads/available-count', '\App\Http\Controllers\Api\V1\LeadController@getAvailableCount');
+	    Route::get('/leads/export', '\App\Http\Controllers\Api\V1\LeadController@export');
         Route::get('/leads', '\App\Http\Controllers\Api\V1\LeadController@getAll');
         Route::post('/leads/assign', '\App\Http\Controllers\Api\V1\LeadController@assign');
         Route::get('/my-leads', '\App\Http\Controllers\Api\V1\LeadController@getMine');
+	    Route::post('/leads/import/batch/{batch}/cancel', '\App\Http\Controllers\Api\V1\LeadController@cancelBatch');
+	    Route::post('/leads/import/batch/{batch}/approve', '\App\Http\Controllers\Api\V1\LeadController@approveBatch');
+	    Route::get('/leads/import/batch/{batch}', '\App\Http\Controllers\Api\V1\LeadController@pendingDetails');
         Route::post('/leads/import', '\App\Http\Controllers\Api\V1\LeadController@importLeads');
+	    Route::get('/leads/pending-import', '\App\Http\Controllers\Api\V1\LeadController@pendingImport');
         Route::post('/lead/{id}/create-ticket', '\App\Http\Controllers\Api\V1\LeadController@createTicket');
         Route::get('/lead/{id}/tickets', '\App\Http\Controllers\Api\V1\LeadController@getTickets');
         Route::get('/lead/{id}/current-ticket', '\App\Http\Controllers\Api\V1\LeadController@getCurrentTicket');
         Route::get('/lead/{id}', '\App\Http\Controllers\Api\V1\LeadController@getOne');
+        Route::post('/leads/mass-assign', '\App\Http\Controllers\Api\V1\LeadController@massAssign');
 
-        /** Agent */
-        Route::get('/agents', '\App\Http\Controllers\UserController@getAllAgent');
+        /** User */
+	    Route::get('/user/{id}', '\App\Http\Controllers\UserController@getOne');
+	    Route::put('/user/{id}/add-groups', '\App\Http\Controllers\UserController@addGroups');
+        Route::get('/users/agents', '\App\Http\Controllers\UserController@getAllAgent');
+	    Route::get('/users', '\App\Http\Controllers\UserController@getAll');
+	    Route::put('/user/{id}', '\App\Http\Controllers\UserController@update');
+
+        /** Agent Group */
+	    Route::put('/agent-group/{id}/add-agents', '\App\Http\Controllers\Api\V1\AgentGroupController@addAgents');
+	    Route::put('/agent-group/{id}', '\App\Http\Controllers\Api\V1\AgentGroupController@update');
+	    Route::get('/agent-group/{id}', '\App\Http\Controllers\Api\V1\AgentGroupController@getOne');
+	    Route::get('/agent-groups', '\App\Http\Controllers\Api\V1\AgentGroupController@getAll');
+	    Route::post('/agent-groups', '\App\Http\Controllers\Api\V1\AgentGroupController@create');
+	    Route::delete('/agent-group/{id}', '\App\Http\Controllers\Api\V1\AgentGroupController@delete');
+
+	    /** User Roles */
+	    Route::get('/user-roles', 'Api\V1\RoleController@getAll');
     });
 });

@@ -54,7 +54,8 @@
             "database/factories"
         ],
         "files": [
-            "app/Http/Helpers/String.php"
+            "app/Http/Helpers/String.php",
+            "app/Http/Helpers/Excel.php"
         ]
     },
     "autoload-dev": {

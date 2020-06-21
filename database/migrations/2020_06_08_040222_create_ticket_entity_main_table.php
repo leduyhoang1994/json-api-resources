@@ -21,6 +21,7 @@ class CreateTicketEntityMainTable extends Migration
             $table->integer('customer_id')->unsigned()->nullable();
             $table->integer('current_agent_id')->unsigned()->nullable();
             $table->integer('current_level_id')->unsigned()->nullable();
+            $table->smallInteger('status');
 			$table->timestamps();
         });
                 
