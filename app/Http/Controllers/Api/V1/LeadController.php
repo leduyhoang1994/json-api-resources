@@ -309,7 +309,7 @@ class LeadController extends Controller
 	{
 		$data = $this->getByRequest($request);
 		unset($data['page-size']);
-		$leads = $this->repository->getDataBy();
+		$leads = $this->repository->getDataBy($data);
 		return exportLeads($leads);
 	}
 }
