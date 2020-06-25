@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60bbb4ce974a859a048859b0343789a2",
+    "content-hash": "c1ea478346fea4cce761557318731c29",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3430,19 +3430,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/leduyhoang1994/eav.git",
-                "reference": "c55de8a5714a2681b986d6b9f43b559bebfd12a7"
+                "reference": "56933452fffbcaf4d5dffc8762a153798d506002"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/leduyhoang1994/eav/zipball/c55de8a5714a2681b986d6b9f43b559bebfd12a7",
-                "reference": "c55de8a5714a2681b986d6b9f43b559bebfd12a7",
+                "url": "https://api.github.com/repos/leduyhoang1994/eav/zipball/56933452fffbcaf4d5dffc8762a153798d506002",
+                "reference": "56933452fffbcaf4d5dffc8762a153798d506002",
                 "shasum": ""
             },
             "require": {
                 "illuminate/database": "^5.5|^6.0|^7.0",
                 "league/csv": "^9.0",
                 "php": ">=7.0.0",
-                "sunel/json-api-resources": ">=0.0.1"
+                "sunel/json-api-resources": "dev-hoangbeat"
             },
             "require-dev": {
                 "fzaninotto/faker": "~1.4",
@@ -3486,16 +3486,71 @@
             "time": "2020-06-15T22:16:00+00:00"
         },
         {
+            "name": "sunel/eav-dashboard",
+            "version": "dev-hoangbeat",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/leduyhoang1994/eav-dashboard.git",
+                "reference": "919ebdc3533491bdf58360f23bfc6c30e2f5ff81"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/leduyhoang1994/eav-dashboard/zipball/919ebdc3533491bdf58360f23bfc6c30e2f5ff81",
+                "reference": "919ebdc3533491bdf58360f23bfc6c30e2f5ff81",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.0",
+                "sunel/eav": "dev-hoangbeat"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Eav\\Dashboard\\LaravelServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Eav\\Dashboard\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Eav\\Dashboard\\TestCase\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sunel TR",
+                    "email": "sunelbe@gmail.com"
+                }
+            ],
+            "description": "Eav Dashboard.",
+            "keywords": [
+                "eav",
+                "laravel"
+            ],
+            "support": {
+                "source": "https://github.com/leduyhoang1994/eav-dashboard/tree/hoangbeat"
+            },
+            "time": "2020-06-24T13:16:15+00:00"
+        },
+        {
             "name": "sunel/json-api-resources",
             "version": "v0.0.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/sunel/json-api-resources.git",
+                "url": "https://github.com/leduyhoang1994/json-api-resources.git",
                 "reference": "81209d9e45da52d15cb0f9d3048d1d02df685c0d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sunel/json-api-resources/zipball/81209d9e45da52d15cb0f9d3048d1d02df685c0d",
+                "url": "https://api.github.com/repos/leduyhoang1994/json-api-resources/zipball/81209d9e45da52d15cb0f9d3048d1d02df685c0d",
                 "reference": "81209d9e45da52d15cb0f9d3048d1d02df685c0d",
                 "shasum": ""
             },
@@ -7446,7 +7501,8 @@
     "stability-flags": {
         "jenssegers/mongodb": 20,
         "larky/core": 20,
-        "sunel/eav": 20
+        "sunel/eav": 20,
+        "sunel/eav-dashboard": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

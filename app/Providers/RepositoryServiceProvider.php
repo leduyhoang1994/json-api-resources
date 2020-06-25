@@ -28,6 +28,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(\App\Http\Repositories\Contracts\TicketNoteRepository::class, \App\Http\Repositories\Eloquents\TicketNoteRepositoryEloquent::class);
         $this->app->bind(\App\Http\Repositories\Contracts\AgentGroupRepository::class, \App\Http\Repositories\Eloquents\AgentGroupRepositoryEloquent::class);
         $this->app->bind(\App\Http\Repositories\Contracts\UserRepository::class, \App\Http\Repositories\Eloquents\UserRepositoryEloquent::class);
+        $this->app->bind(\App\Http\Repositories\Contracts\OrderRepository::class, \App\Http\Repositories\Eloquents\OrderRepositoryEloquent::class);
+        $this->app->bind(\App\Http\Repositories\Contracts\PackageRepository::class, \App\Http\Repositories\Eloquents\PackageRepositoryEloquent::class);
+        $this->app->bind(\App\Http\Repositories\Contracts\CouponRepository::class, \App\Http\Repositories\Eloquents\CouponRepositoryEloquent::class);
+        $this->app->bind(\App\Http\Repositories\Contracts\OrderDetailRepository::class, \App\Http\Repositories\Eloquents\OrderDetailRepositoryEloquent::class);
         //:end-bindings:
     }
 }

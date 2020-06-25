@@ -57,7 +57,7 @@ class TicketRepositoryEloquent extends BaseRepository implements TicketRepositor
         if (isset($options['withAttributes']) && $options['withAttributes']) {
             $tickets = $tickets->whereAttribute('lead_id', $options['leadId']);
         }
-
+	    $tickets = $tickets->orderBy('created_at', 'desc');
         return $tickets->get(["*", "attr.*"]);
     }
 

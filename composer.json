@@ -10,6 +10,14 @@
         {
             "type": "vcs",
             "url": "https://github.com/leduyhoang1994/eav"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/leduyhoang1994/eav-dashboard"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/leduyhoang1994/json-api-resources"
         }
     ],
     "license": "MIT",
@@ -26,6 +34,7 @@
         "phpoffice/phpspreadsheet": "^1.13",
         "prettus/l5-repository": "^2.6",
         "sunel/eav": "dev-hoangbeat",
+        "sunel/eav-dashboard": "dev-hoangbeat",
         "symfony/psr-http-message-bridge": "^2.0"
     },
     "require-dev": {

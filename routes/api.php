@@ -52,6 +52,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/lead/{id}/tickets', '\App\Http\Controllers\Api\V1\LeadController@getTickets');
         Route::get('/lead/{id}/current-ticket', '\App\Http\Controllers\Api\V1\LeadController@getCurrentTicket');
         Route::get('/lead/{id}', '\App\Http\Controllers\Api\V1\LeadController@getOne');
+	    Route::put('/lead/{id}', '\App\Http\Controllers\Api\V1\LeadController@update');
+	    Route::post('/leads', '\App\Http\Controllers\Api\V1\LeadController@create');
         Route::post('/leads/mass-assign', '\App\Http\Controllers\Api\V1\LeadController@massAssign');
 
         /** User */
@@ -71,5 +73,16 @@ Route::prefix('v1')->group(function () {
 
 	    /** User Roles */
 	    Route::get('/user-roles', 'Api\V1\RoleController@getAll');
+
+	    /** Order */
+	    Route::post('/orders', '\App\Http\Controllers\Api\V1\OrderController@create');
+	    Route::get('/order/{id}', '\App\Http\Controllers\Api\V1\OrderController@getOne');
+	    Route::put('/order/{id}', '\App\Http\Controllers\Api\V1\OrderController@update');
+
+	    /** Package */
+	    Route::get('/packages', '\App\Http\Controllers\Api\V1\PackageController@getAll');
+
+	    /** Coupon */
+	    Route::get('/coupons', '\App\Http\Controllers\Api\V1\CouponController@getAll');
     });
 });

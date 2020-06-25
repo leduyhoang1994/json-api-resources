@@ -12,6 +12,7 @@ use Eav\EntityAttribute;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\Auth;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\TicketCreateRequest;
@@ -29,190 +30,190 @@ use Illuminate\Support\Facades\DB;
  */
 class TicketsController extends Controller
 {
-  /**
-   * @var TicketRepository
-   */
-  protected $repository;
+	/**
+	 * @var TicketRepository
+	 */
+	protected $repository;
 
-  /**
-   * @var TicketValidator
-   */
-  protected $validator;
+	/**
+	 * @var TicketValidator
+	 */
+	protected $validator;
 
-  /**
-   * @var TicketNoteRepository
-   */
-  protected $ticketNoteRepository;
+	/**
+	 * @var TicketNoteRepository
+	 */
+	protected $ticketNoteRepository;
 
-  /**
-   * TicketsController constructor.
-   *
-   * @param TicketRepository $repository
-   * @param TicketValidator $validator
-   * @param TicketNoteRepository $ticketNoteRepository
-   */
-  public function __construct(TicketRepository $repository, TicketValidator $validator, TicketNoteRepository $ticketNoteRepository)
-  {
-    $this->repository = $repository;
-    $this->validator = $validator;
-    $this->ticketNoteRepository = $ticketNoteRepository;
-  }
+	/**
+	 * TicketsController constructor.
+	 *
+	 * @param TicketRepository $repository
+	 * @param TicketValidator $validator
+	 * @param TicketNoteRepository $ticketNoteRepository
+	 */
+	public function __construct(TicketRepository $repository, TicketValidator $validator, TicketNoteRepository $ticketNoteRepository)
+	{
+		$this->repository = $repository;
+		$this->validator = $validator;
+		$this->ticketNoteRepository = $ticketNoteRepository;
+	}
 
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function all()
-  {
-    //        $this->createAttribute();
-    //        Ticket::create([
-    //            'lead_id' => 33,
-    //            'status' => 1
-    //        ]);
-    $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-    $tickets = $this->repository->all(['attr.*']);
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function all()
+	{
+		//        $this->createAttribute();
+		//        Ticket::create([
+		//            'lead_id' => 33,
+		//            'status' => 1
+		//        ]);
+		$this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+		$tickets = $this->repository->all(['attr.*']);
 
-    $paymentAcceptanceAttr = Attribute::findByCode('payment_acceptance', 'ticket');
-    $paymentAcceptanceAttr->load('optionValues');
+		$paymentAcceptanceAttr = Attribute::findByCode('payment_acceptance', 'ticket');
+		$paymentAcceptanceAttr->load('optionValues');
 
-    $paymentAcceptanceAttr->frontend_type; // This will return the type in this case 'select'
+		$paymentAcceptanceAttr->frontend_type; // This will return the type in this case 'select'
 
-    $options = $paymentAcceptanceAttr->options();
+		$options = $paymentAcceptanceAttr->options();
 
-    $entity = \Eav\Entity::findByCode('ticket');
+		$entity = \Eav\Entity::findByCode('ticket');
 
-    $attributes = $entity->attributes;
-    return $this->responseSuccess($attributes);
-  }
+		$attributes = $entity->attributes;
+		return $this->responseSuccess($attributes);
+	}
 
-  public function createOne()
-  {
-    $ticket = Ticket::create([
-      'lead_id' => 1,
-      'attribute_set_id' => 2
-    ]);
+	public function createOne()
+	{
+		$ticket = Ticket::create([
+			'lead_id' => 1,
+			'attribute_set_id' => 2
+		]);
 
-    return $this->responseSuccess($ticket);
-  }
+		return $this->responseSuccess($ticket);
+	}
 
-  public function create(Request $request)
-  {
-    $defaultAttributeSet = 2;
-    // $attributes =
-  }
+	public function create(Request $request)
+	{
+		$defaultAttributeSet = 2;
+		// $attributes =
+	}
 
-  public function update(Request $request, $id)
-  {
-    $ticket = $this->repository->getById($id);
-    if (!$ticket) {
-      return $this->responseError(404, "Ticket not found");
-    }
-    $entity = \Eav\Entity::findByCode('ticket');
+	public function update(Request $request, $id)
+	{
+		$ticket = $this->repository->getById($id);
+		if (!$ticket) {
+			return $this->responseError(404, "Ticket not found");
+		}
+		$entity = \Eav\Entity::findByCode('ticket');
 
-    $attributeSet = $entity->attributeSet->filter(function ($set) use ($ticket) {
-      return $set->attribute_set_id == $ticket->attribute_set_id;
-    })->first();
+		$attributeSet = $entity->attributeSet->filter(function ($set) use ($ticket) {
+			return $set->attribute_set_id == $ticket->attribute_set_id;
+		})->first();
 
-    if ($attributeSet) {
-      $attributeSet = $attributeSet->load(['attributeGroup.attributes.optionValues', 'attributeGroup.processRules']);
-    }
+		if ($attributeSet) {
+			$attributeSet = $attributeSet->load(['attributeGroup.attributes.optionValues', 'attributeGroup.processRules']);
+		}
 
-    $ticket->fill($request->all());
-    foreach ($attributeSet->attributeGroup as $group) {
-      foreach ($group->attributes as $attribute) {
-        $code = $attribute->attribute_code;
-        if ($request->has($code)) {
-          if ($attribute->backend_type === "integer") {
-            $ticket->$code = intval($request->get($code));
-          } else {
-            $ticket->$code = $request->get($code);
-          }
-        }
-      }
-    }
-    $dirty = $ticket->getDirty();
-    $changes = [];
-    if (count($dirty) > 0) {
-      foreach ($dirty as $attr => $val) {
-        $changes[$attr]["from"] = $ticket->getOriginal($attr);
-        $changes[$attr]["to"] = $val;
-      }
-      try {
-        DB::beginTransaction();
-        $noteType = TicketNoteType::getType(isset($changes['current_level_id']) ? TicketNoteType::UPDATE_LEVEL : TicketNoteType::UPDATE_TICKET);
-        if ($noteType == TicketNoteType::getType(TicketNoteType::UPDATE_LEVEL)) {
-          $attributeSet = $entity->attributeSet->where("attribute_set_id", $ticket->attribute_set_id)->first();
-          $oldLevel = $attributeSet->attributeGroup->where('attribute_group_id', $ticket->getOriginal("current_level_id"))->first();
-          $newLevel = $attributeSet->attributeGroup->where('attribute_group_id', $ticket->current_level_id)->first();
+		$ticket->fill($request->all());
+		foreach ($attributeSet->attributeGroup as $group) {
+			foreach ($group->attributes as $attribute) {
+				$code = $attribute->attribute_code;
+				if ($request->has($code)) {
+					if ($attribute->backend_type === "integer") {
+						$ticket->$code = intval($request->get($code));
+					} else {
+						$ticket->$code = $request->get($code);
+					}
+				}
+			}
+		}
+		$dirty = $ticket->getDirty();
+		$changes = [];
+		if (count($dirty) > 0) {
+			foreach ($dirty as $attr => $val) {
+				$changes[$attr]["from"] = $ticket->getOriginal($attr);
+				$changes[$attr]["to"] = $val;
+			}
+			try {
+				DB::beginTransaction();
+				$noteType = TicketNoteType::getType(isset($changes['current_level_id']) ? TicketNoteType::UPDATE_LEVEL : TicketNoteType::UPDATE_TICKET);
+				if ($noteType == TicketNoteType::getType(TicketNoteType::UPDATE_LEVEL)) {
+					$attributeSet = $entity->attributeSet->where("attribute_set_id", $ticket->attribute_set_id)->first();
+					$oldLevel = $attributeSet->attributeGroup->where('attribute_group_id', $ticket->getOriginal("current_level_id"))->first();
+					$newLevel = $attributeSet->attributeGroup->where('attribute_group_id', $ticket->current_level_id)->first();
 
-          $oldLevel = $oldLevel ? $oldLevel : (new \Eav\AttributeGroup([
-            'sequence' => 0
-          ]));
+					$oldLevel = $oldLevel ? $oldLevel : (new \Eav\AttributeGroup([
+						'sequence' => 0
+					]));
 
-          $attrGroups = $attributeSet->attributeGroup->filter(function ($item) use ($oldLevel, $newLevel) {
-            $formula = ($oldLevel->sequence > $newLevel->sequence) ?
-              $item->sequence >= $newLevel->sequence && $item->sequence < $oldLevel->sequence
-              :
-              $item->sequence <= $newLevel->sequence && $item->sequence > $oldLevel->sequence;
-            return $formula;
-          })->values()->toArray();
+					$attrGroups = $attributeSet->attributeGroup->filter(function ($item) use ($oldLevel, $newLevel) {
+						$formula = ($oldLevel->sequence > $newLevel->sequence) ?
+							$item->sequence >= $newLevel->sequence && $item->sequence < $oldLevel->sequence
+							:
+							$item->sequence <= $newLevel->sequence && $item->sequence > $oldLevel->sequence;
+						return $formula;
+					})->values()->toArray();
 
-          usort($attrGroups, function ($a, $b) use ($oldLevel, $newLevel) {
-            return ($oldLevel->sequence < $newLevel->sequence) ? ($a['sequence'] > $b['sequence']) : ($a['sequence'] < $b['sequence']);
-          });
+					usort($attrGroups, function ($a, $b) use ($oldLevel, $newLevel) {
+						return ($oldLevel->sequence < $newLevel->sequence) ? ($a['sequence'] > $b['sequence']) : ($a['sequence'] < $b['sequence']);
+					});
 
-          // return $this->responseSuccess($attrGroups);
+					// return $this->responseSuccess($attrGroups);
 
-          foreach ($attrGroups as $group) {
-            $this->ticketNoteRepository->create([
-              'ticket_id' => $id,
-              'note_type' => $noteType->id,
-              'current_level' => $group['attribute_group_name'],
-              'current_level_id' => $group['attribute_group_id'],
-              'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
-              'ticket_data' => json_encode([
-                'ticket' => $ticket,
-                'changes' => $changes
-              ])
-            ]);
-          }
-        } else {
-          $this->ticketNoteRepository->create([
-            'ticket_id' => $id,
-            'note_type' => $noteType->id,
-            'current_level' => $ticket->current_level,
-            'current_level_id' => $ticket->current_level_id,
-            'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
-            'ticket_data' => json_encode([
-              'ticket' => $ticket,
-              'changes' => $changes
-            ])
-          ]);
-        }
+					foreach ($attrGroups as $group) {
+						$this->ticketNoteRepository->create([
+							'ticket_id' => $id,
+							'note_type' => $noteType->id,
+							'current_level' => $group['attribute_group_name'],
+							'current_level_id' => $group['attribute_group_id'],
+							'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
+							'ticket_data' => json_encode([
+								'ticket' => $ticket,
+								'changes' => $changes
+							])
+						]);
+					}
+				} else {
+					$this->ticketNoteRepository->create([
+						'ticket_id' => $id,
+						'note_type' => $noteType->id,
+						'current_level' => $ticket->current_level,
+						'current_level_id' => $ticket->current_level_id,
+						'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
+						'ticket_data' => json_encode([
+							'ticket' => $ticket,
+							'changes' => $changes
+						])
+					]);
+				}
 
-        if (isset($changes["status"])) {
-        	$nodeType = TicketNoteType::getType($ticket["status"] === 1 ? TicketNoteType::OPEN_TICKET : TicketNoteType::CLOSE_TICKET);
-	        $this->ticketNoteRepository->create([
-		        'ticket_id' => $id,
-		        'note_type' => $nodeType->id,
-		        'current_level' => $ticket->current_level,
-		        'current_level_id' => $ticket->current_level_id,
-		        'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
-		        'ticket_data' => json_encode([
-			        'ticket' => $ticket,
-			        'changes' => $changes
-		        ])
-	        ]);
-        }
-        $ticket->save();
-        DB::commit();
-      } catch (Exception $ex) {
-        DB::rollback();
-        return $this->responseError(500, "Something wrongs");
-      }
-    }
+				if (isset($changes["status"])) {
+					$nodeType = TicketNoteType::getType($ticket["status"] === 1 ? TicketNoteType::OPEN_TICKET : TicketNoteType::CLOSE_TICKET);
+					$this->ticketNoteRepository->create([
+						'ticket_id' => $id,
+						'note_type' => $nodeType->id,
+						'current_level' => $ticket->current_level,
+						'current_level_id' => $ticket->current_level_id,
+						'note' => $request->has('agent_note') ? $request->get('agent_note') : $noteType->label,
+						'ticket_data' => json_encode([
+							'ticket' => $ticket,
+							'changes' => $changes
+						])
+					]);
+				}
+				$ticket->save();
+				DB::commit();
+			} catch (Exception $ex) {
+				DB::rollback();
+				return $this->responseError(500, "Something wrongs");
+			}
+		}
 
-    return $this->responseSuccess($ticket);
-  }
+		return $this->responseSuccess($ticket);
+	}
 }

@@ -16,5 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserRoleSeeder::class);
         $this->call(SaleTicketProcessRuleSeeder::class);
         $this->call(InstallPassportSeeder::class);
+	    $this->call(PackageSeeder::class);
+	    $this->call(CouponSeeder::class);
     }
 }

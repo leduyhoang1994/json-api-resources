@@ -4,5 +4,6 @@
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/larky/core" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/sunel/eav" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/sunel/eav-dashboard" vcs="Git" />
   </component>
 </project>

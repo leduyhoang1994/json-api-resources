@@ -42,75 +42,75 @@ function getLogic($formula, $rules, $data, $boundary = false)
     return $formula;
 }
 
-Route::get('/', function () {
-    $a = 1;
-    $b = 2;
-    $c = null;
-    $formula = "";
-
-    $data = [
-        'a' => 1,
-        'b' => 2
-    ];
-
-    $rules = [
-        [
-            'field' => 'a',
-            'equation' => '>',
-            'value' => 4,
-            'logic' => '&&'
-        ],
-        [
-            'field' => 'b',
-            'equation' => '>',
-            'value' => 4,
-            'logic' => '&&'
-        ],
-        [
-            'field' => null,
-            'equation' => 'formula',
-            'value' => null,
-            'logic' => '&&',
-            'childrens' => [
-                [
-                    'field' => 'a',
-                    'equation' => '>',
-                    'value' => 8,
-                    'logic' => '&&'
-                ],
-                [
-                    'field' => 'b',
-                    'equation' => '>',
-                    'value' => 8,
-                    'logic' => '&&'
-                ],
-                [
-                    'field' => null,
-                    'equation' => 'formula',
-                    'value' => null,
-                    'logic' => '&&',
-                    'childrens' => [
-                        [
-                            'field' => 'a',
-                            'equation' => '>',
-                            'value' => 9,
-                            'logic' => '&&'
-                        ],
-                        [
-                            'field' => 'b',
-                            'equation' => '>',
-                            'value' => 9,
-                            'logic' => '&&'
-                        ],
-                    ]
-                ]
-            ]
-        ],
-    ];
-
-    $formula = getLogic($formula, $rules, '$data');
-    var_dump($formula);
-    eval("\$c = $formula;");
-    var_dump($c);
-    return $c;
-});
+//Route::get('/', function () {
+//    $a = 1;
+//    $b = 2;
+//    $c = null;
+//    $formula = "";
+//
+//    $data = [
+//        'a' => 1,
+//        'b' => 2
+//    ];
+//
+//    $rules = [
+//        [
+//            'field' => 'a',
+//            'equation' => '>',
+//            'value' => 4,
+//            'logic' => '&&'
+//        ],
+//        [
+//            'field' => 'b',
+//            'equation' => '>',
+//            'value' => 4,
+//            'logic' => '&&'
+//        ],
+//        [
+//            'field' => null,
+//            'equation' => 'formula',
+//            'value' => null,
+//            'logic' => '&&',
+//            'childrens' => [
+//                [
+//                    'field' => 'a',
+//                    'equation' => '>',
+//                    'value' => 8,
+//                    'logic' => '&&'
+//                ],
+//                [
+//                    'field' => 'b',
+//                    'equation' => '>',
+//                    'value' => 8,
+//                    'logic' => '&&'
+//                ],
+//                [
+//                    'field' => null,
+//                    'equation' => 'formula',
+//                    'value' => null,
+//                    'logic' => '&&',
+//                    'childrens' => [
+//                        [
+//                            'field' => 'a',
+//                            'equation' => '>',
+//                            'value' => 9,
+//                            'logic' => '&&'
+//                        ],
+//                        [
+//                            'field' => 'b',
+//                            'equation' => '>',
+//                            'value' => 9,
+//                            'logic' => '&&'
+//                        ],
+//                    ]
+//                ]
+//            ]
+//        ],
+//    ];
+//
+//    $formula = getLogic($formula, $rules, '$data');
+//    var_dump($formula);
+//    eval("\$c = $formula;");
+//    var_dump($c);
+//    return $c;
+//});

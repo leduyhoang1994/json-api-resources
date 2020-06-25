@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Prettus\Validator\Exceptions\ValidatorException;
 
 class LeadController extends Controller
 {
@@ -74,7 +75,18 @@ class LeadController extends Controller
 		if ($tickets) {
 			$entity = \Eav\Entity::findByCode('ticket');
 
-			$sets = $entity->attributeSet->load(['attributeGroup.attributes.optionValues', 'attributeGroup.processRules']);
+			$sets = $entity->attributeSet->load(['attributeGroup.attributes', 'attributeGroup.processRules']);
+			foreach ($sets as $set) {
+				foreach ($set->attributeGroup as $group) {
+					foreach ($group->attributes as $attribute) {
+						if ($attribute->source_class) {
+							$attribute->option_values = $attribute->options();
+						} else {
+							$attribute->option_values = $attribute->optionValues;
+						}
+					}
+				}
+			}
 		}
 		return $this->responseSuccess([
 			"tickets" => $tickets,
@@ -95,7 +107,18 @@ class LeadController extends Controller
 		}
 
 		$entity = \Eav\Entity::findByCode('ticket');
-		$sets = $entity->attributeSet->load(['attributeGroup.attributes.optionValues', 'attributeGroup.processRules']);
+		$sets = $entity->attributeSet->load(['attributeGroup.attributes', 'attributeGroup.processRules']);
+		foreach ($sets as $set) {
+			foreach ($set->attributeGroup as $group) {
+				foreach ($group->attributes as $attribute) {
+					if ($attribute->source_class) {
+						$attribute->option_values = $attribute->options();
+					} else {
+						$attribute->option_values = $attribute->optionValues;
+					}
+				}
+			}
+		}
 
 		return $this->responseSuccess([
 			"ticket" => $ticket,
@@ -116,11 +139,24 @@ class LeadController extends Controller
 		$ticket = $this->ticketRepository->create([
 			'lead_id' => $id,
 			'attribute_set_id' => $defaultAttributeSet,
-			'status' => 1
+			'status' => 1,
+			'current_agent_id' => Auth::id()
 		]);
 
 		$entity = \Eav\Entity::findByCode('ticket');
-		$sets = $entity->attributeSet->load(['attributeGroup.attributes.optionValues', 'attributeGroup.processRules']);
+		$sets = $entity->attributeSet->load(['attributeGroup.attributes', 'attributeGroup.processRules']);
+
+		foreach ($sets as $set) {
+			foreach ($set->attributeGroup as $group) {
+				foreach ($group->attributes as $attribute) {
+					if ($attribute->source_class) {
+						$attribute->option_values = $attribute->options();
+					} else {
+						$attribute->option_values = $attribute->optionValues;
+					}
+				}
+			}
+		}
 
 		$this->repository->update($id, [
 			'current_ticket_id' => $ticket->id
@@ -311,5 +347,29 @@ class LeadController extends Controller
 		unset($data['page-size']);
 		$leads = $this->repository->getDataBy($data);
 		return exportLeads($leads);
+	}
+
+	public function update(Request $request, $id)
+	{
+		try {
+			$data = $this->repository->update($id, $request->all());
+			return $this->responseSuccess($data);
+		} catch (ValidatorException $exception) {
+			return $this->responseError(400, $exception->getMessageBag()->first());
+		} catch (Exception $exception) {
+			$this->responseError(500, $exception->getMessage());
+		}
+	}
+
+	public function create(Request $request)
+	{
+		try {
+			$data = $this->repository->create($request->all());
+			return $this->responseSuccess($data);
+		} catch (ValidatorException $exception) {
+			return $this->responseError(400, $exception->getMessageBag()->first());
+		} catch (Exception $exception) {
+			$this->responseError(500, $exception->getMessage());
+		}
 	}
 }

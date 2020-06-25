@@ -95,6 +95,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/type" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/version" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/sunel/eav" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sunel/eav-dashboard" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/sunel/json-api-resources" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/swiftmailer/swiftmailer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/console" />

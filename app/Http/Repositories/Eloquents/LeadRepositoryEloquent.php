@@ -26,6 +26,11 @@ class LeadRepositoryEloquent extends BaseRepository implements LeadRepository
 		return Lead::class;
 	}
 
+	public function validator()
+	{
+		return LeadValidator::class;
+	}
+
 
 	/**
 	 * Boot up the repository, pushing criteria
@@ -106,7 +111,10 @@ class LeadRepositoryEloquent extends BaseRepository implements LeadRepository
 		if (is_array($id)) {
 			return $model::whereIn('id', $id)->update($data);
 		}
-		return $model::where('id', $id)->update($data);
+		$lead = $model::find($id);
+		$lead->fill($data)->save();
+
+		return $lead;
 	}
 
 	public function deleteBy($options = [])
