@@ -6,7 +6,8 @@ use Illuminate\Support\Str;
 use ApiHelper\IncludeRegistery;
 use ApiHelper\Http\Concerns\InteractsWithRequest;
 
-class RelationshipResource extends \Illuminate\Http\Resources\Json\Resource
+class RelationshipResource extends \Illuminate\Http\Resources\Json\JsonResource
+
 {
     use InteractsWithRequest;
 
